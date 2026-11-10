@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow Studio - Minimalist Kanban Board</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans min-h-screen flex flex-col justify-between antialiased selection:bg-violet-500 selection:text-white">
+
+    <!-- HEADER (Estilo Clean Studio) -->
+    <header class="bg-white border-b border-gray-200 h-20 flex items-center justify-between px-6 md:px-12 sticky top-0 z-50 shadow-xs">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-violet-600 flex items-center justify-center text-white shadow-md shadow-violet-200">
+                <i data-lucide="kanban" class="w-5 h-5"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-lg text-gray-900 tracking-tight">TaskFlow <span class="text-violet-600">Studio</span></h1>
+                <p class="text-xs text-gray-500" data-i18n="subtitle">Agile Workflow Management</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <!-- BOTÃO IDIOMA (PT/EN) -->
+            <button onclick="toggleLanguage()" class="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-gray-50 border border-gray-300 hover:bg-gray-100 text-xs font-semibold text-gray-700 transition-all">
+                <i data-lucide="globe" class="w-4 h-4 text-violet-600"></i>
+                <span id="langLabel">PT / EN</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-6 md:p-10 flex flex-col">
+        
+        <!-- BARRA SUPERIOR DE ADIÇÃO -->
+        <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div>
+                <h2 class="text-xl font-bold text-gray-900" data-i18n="board_title">Project Workspace</h2>
+                <p class="text-xs text-gray-500 mt-1" data-i18n="board_sub">Organize your task cards with automatic browser storage persistence.</p>
+            </div>
+            <div class="flex items-center gap-3 w-full md:w-auto">
+                <input type="text" id="taskInput" placeholder="Write a new task..." data-i18n-placeholder="ph_task"
+                    class="bg-gray-50 border border-gray-300 rounded-xl px-4 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:bg-white flex-1 md:w-80 transition-all">
+                <button onclick="addTask()" class="px-5 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-semibold text-sm transition-all shadow-sm shadow-violet-200 flex items-center gap-2">
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                    <span data-i18n="btn_add">Add Card</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- COLUNAS DO KANBAN -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 flex-1">
+            
+            <!-- COLUNA 1: TO DO -->
+            <div class="bg-gray-50/80 p-5 rounded-2xl border border-gray-200 flex flex-col">
+                <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-200">
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+                        <h3 class="font-bold text-xs uppercase tracking-wider text-gray-700" data-i18n="col_todo">To Do</h3>
+                    </div>
+                    <span id="countTodo" class="text-xs font-bold bg-white px-2.5 py-1 rounded-full border border-gray-200 text-gray-600 shadow-2xs">0</span>
+                </div>
+                <div id="todoList" class="space-y-3 flex-1 min-h-[320px]"></div>
+            </div>
+
+            <!-- COLUNA 2: IN PROGRESS -->
+            <div class="bg-gray-50/80 p-5 rounded-2xl border border-gray-200 flex flex-col">
+                <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-200">
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-blue-500"></span>
+                        <h3 class="font-bold text-xs uppercase tracking-wider text-gray-700" data-i18n="col_progress">In Progress</h3>
+                    </div>
+                    <span id="countProgress" class="text-xs font-bold bg-white px-2.5 py-1 rounded-full border border-gray-200 text-gray-600 shadow-2xs">0</span>
+                </div>
+                <div id="progressList" class="space-y-3 flex-1 min-h-[320px]"></div>
+            </div>
+
+            <!-- COLUNA 3: DONE -->
+            <div class="bg-gray-50/80 p-5 rounded-2xl border border-gray-200 flex flex-col">
+                <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-200">
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+                        <h3 class="font-bold text-xs uppercase tracking-wider text-gray-700" data-i18n="col_done">Done</h3>
+                    </div>
+                    <span id="countDone" class="text-xs font-bold bg-white px-2.5 py-1 rounded-full border border-gray-200 text-gray-600 shadow-2xs">0</span>
+                </div>
+                <div id="doneList" class="space-y-3 flex-1 min-h-[320px]"></div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-t border-gray-200 py-6 text-center text-xs text-gray-500 mt-10">
+        <p>© 2026 TaskFlow Studio. Engineered by Andréia Antunes.</p>
+    </footer>
+
+    <!-- LÓGICA JAVASCRIPT -->
+    <script>
+        lucide.createIcons();
+
+        const translations = {
+            en: {
+                subtitle: "Agile Workflow Management",
+                board_title: "Project Workspace",
+                board_sub: "Organize your task cards with automatic browser storage persistence.",
+                ph_task: "Write a new task...",
+                btn_add: "Add Card",
+                col_todo: "To Do",
+                col_progress: "In Progress",
+                col_done: "Done"
+            },
+            pt: {
+                subtitle: "Gestão de Fluxo Ágil",
+                board_title: "Espaço de Trabalho",
+                board_sub: "Organize suas tarefas com salvamento automático no navegador.",
+                ph_task: "Escreva uma nova tarefa...",
+                btn_add: "Adicionar Cartão",
+                col_todo: "A Fazer",
+                col_progress: "Em Progresso",
+                col_done: "Concluído"
+            }
+        };
+
+        let currentLang = 'en';
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'pt' : 'en';
+            document.getElementById('langLabel').innerText = currentLang === 'en' ? 'PT / EN' : 'EN / PT';
+            
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[currentLang][key]) {
+                    el.innerText = translations[currentLang][key];
+                }
+            });
+
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (translations[currentLang][key]) {
+                    el.placeholder = translations[currentLang][key];
+                }
+            });
+            renderTasks();
+        }
+
+        let tasks = JSON.parse(localStorage.getItem('taskflow_tasks_v2')) || [
+            { id: 1, text: "Design clean user interface mockups", status: 'todo' },
+            { id: 2, text: "Integrate localStorage task persistence", status: 'progress' },
+            { id: 3, text: "Deploy GitHub Pages application", status: 'done' }
+        ];
+
+        function saveTasks() {
+            localStorage.setItem('taskflow_tasks_v2', JSON.stringify(tasks));
+            renderTasks();
+        }
+
+        function addTask() {
+            const input = document.getElementById('taskInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            tasks.push({ id: Date.now(), text: text, status: 'todo' });
+            input.value = '';
+            saveTasks();
+        }
+
+        function deleteTask(id) {
+            tasks = tasks.filter(t => t.id !== id);
+            saveTasks();
+        }
+
+        function moveTask(id, direction) {
+            const task = tasks.find(t => t.id === id);
+            if (!task) return;
+
+            if (direction === 'next') {
+                if (task.status === 'todo') task.status = 'progress';
+                else if (task.status === 'progress') task.status = 'done';
+            } else if (direction === 'prev') {
+                if (task.status === 'done') task.status = 'progress';
+                else if (task.status === 'progress') task.status = 'todo';
+            }
+            saveTasks();
+        }
+
+        function renderTasks() {
+            const todoList = document.getElementById('todoList');
+            const progressList = document.getElementById('progressList');
+            const doneList = document.getElementById('doneList');
+
+            todoList.innerHTML = '';
+            progressList.innerHTML = '';
+            doneList.innerHTML = '';
+
+            let countTodo = 0, countProgress = 0, countDone = 0;
+
+            tasks.forEach(task => {
+                const card = document.createElement('div');
+                card.className = "bg-white p-4 rounded-xl border border-gray-200 shadow-xs flex flex-col justify-between gap-3 hover:shadow-md transition-all";
+                
+                let actionButtons = '';
+                if (task.status === 'todo') {
+                    countTodo++;
+                    actionButtons = `
+                        <button onclick="moveTask(${task.id}, 'next')" class="text-xs px-3 py-1 rounded-lg bg-violet-50 text-violet-700 border border-violet-200 hover:bg-violet-100 font-semibold transition-all">
+                            ${currentLang === 'en' ? 'Next →' : 'Avançar →'}
+                        </button>
+                    `;
+                } else if (task.status === 'progress') {
+                    countProgress++;
+                    actionButtons = `
+                        <button onclick="moveTask(${task.id}, 'prev')" class="text-xs px-2.5 py-1 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 font-semibold transition-all">
+                            ←
+                        </button>
+                        <button onclick="moveTask(${task.id}, 'next')" class="text-xs px-3 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 font-semibold transition-all">
+                            ${currentLang === 'en' ? 'Done ✓' : 'Concluir ✓'}
+                        </button>
+                    `;
+                } else if (task.status === 'done') {
+                    countDone++;
+                    actionButtons = `
+                        <button onclick="moveTask(${task.id}, 'prev')" class="text-xs px-3 py-1 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 font-semibold transition-all">
+                            ← ${currentLang === 'en' ? 'Back' : 'Voltar'}
+                        </button>
+                    `;
+                }
+
+                card.innerHTML = `
+                    <p class="text-sm text-gray-800 font-medium leading-relaxed">${task.text}</p>
+                    <div class="flex items-center justify-between pt-3 border-t border-gray-100">
+                        <div class="flex items-center gap-1.5">${actionButtons}</div>
+                        <button onclick="deleteTask(${task.id})" class="text-gray-400 hover:text-rose-600 transition-colors p-1">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                `;
+
+                if (task.status === 'todo') todoList.appendChild(card);
+                else if (task.status === 'progress') progressList.appendChild(card);
+                else if (task.status === 'done') doneList.appendChild(card);
+            });
+
+            document.getElementById('countTodo').innerText = countTodo;
+            document.getElementById('countProgress').innerText = countProgress;
+            document.getElementById('countDone').innerText = countDone;
+
+            lucide.createIcons();
+        }
+
+        renderTasks();
+    </script>
+</body>
+</html>
