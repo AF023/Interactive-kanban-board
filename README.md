@@ -1,6 +1,6 @@
 # 📋 TaskFlow Studio - Interactive Kanban Task Board
 
-[![Live Demo](https://img.shields.io/badge/Live_Demo-Agile_Task_Board-7C3AED?style=for-the-badge&logo=github)](https://af023.github.io/interactive-kanban-board/)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Agile_Task_Board-7C3AED?style=for-the-badge&logo=github)](https://af023.github.io/Interactive-kanban-board/)
 
 ## 📌 Overview
 TaskFlow Studio is an interactive **Agile Kanban Task Board** designed with a clean, studio-minimalist UI theme. 
@@ -29,4 +29,4 @@ Built with HTML5, Tailwind CSS, and vanilla JavaScript, it features real-time cl
 ## 🚀 How to Run Locally
 1. Clone this repository:
    ```bash
-   git clone [https://github.com/af023/interactive-kanban-board.git](https://github.com/af023/interactive-kanban-board.git)
+   git clone [https://github.com/af023/Interactive-kanban-board.git](https://github.com/af023/Interactive-kanban-board.git)
